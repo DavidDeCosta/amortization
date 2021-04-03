@@ -20,7 +20,7 @@ int main(){
     ofstream o_stream;
     char fileName[50];
     char name[31];
-    double loanAmount, interestRate,Balance,principle;
+    double loanAmount, interestRate,Balance,principle, interest;
     int totalMonths;
 
     o_stream.open("Loans.txt");
@@ -43,7 +43,8 @@ int main(){
             monthly_payment(loanAmount,interestRate,totalMonths);
             double payment = monthly_payment(loanAmount,interestRate,totalMonths);
             Balance = loanAmount;
-            interestRate = interestRate /12 /100;
+            interestRate = interestRate /12 /100;     
+            interest = Balance * interestRate;
             principle = payment - (Balance * interestRate);
             o_stream << endl << setw(8) << "Payment" << setw(12)<< "Amount" << setw(16) << "Interest" << setw(16)<< "Principal" << setw(15) 
                      << "Balance" <<endl;
@@ -53,11 +54,12 @@ int main(){
                 o_stream << setprecision(2);
                 o_stream << setw(4) << n;
                 o_stream << setw(16) << payment;
-                o_stream << setw(15) << Balance * interestRate;
+                o_stream << setw(15) << interest;
                 o_stream << setw(15) << principle;
-                o_stream << setw(15) << Balance << endl;
+                o_stream << setw(15) << Balance - principle << endl;
                 Balance -= principle;
                 principle = payment -(Balance * interestRate);
+                interest = Balance * interestRate;
             }
         }
         i_stream >> ws;
