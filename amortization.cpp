@@ -1,8 +1,8 @@
 /*
-    This program uses information from a file to create an amortization table
+    This program uses information from a file to create an amortization table in another file
 */
 //Programmer: < David DeCosta>
-//Date of last modification: < 2 April 2021>
+//Date of last modification: < 5 April 2021>
 
 #include <iostream>
 #include <fstream>
@@ -18,7 +18,7 @@ int main(){
 
     ifstream i_stream;
     ofstream o_stream;
-    char fileName[50];
+    char fileName[50]; //will store the filename
     char name[31];
     double loanAmount, interestRate,Balance,principle, interest;
     int totalMonths;
@@ -30,7 +30,7 @@ int main(){
         cout << "Enter the name of your file : ";
         cin >> fileName;
         i_stream.open(fileName);
-    }while(i_stream.fail());
+    }while(i_stream.fail()); //will continue to ask for filename if not found
 
     while(!i_stream.eof()){
         loanAmount = 0;
@@ -38,17 +38,16 @@ int main(){
         totalMonths = 0;
         i_stream.get(name, 31);
 
-        while(i_stream.peek()!= '\n'){
-            i_stream >> loanAmount >> interestRate >> totalMonths;
-            monthly_payment(loanAmount,interestRate,totalMonths);
-            double payment = monthly_payment(loanAmount,interestRate,totalMonths);
-            Balance = loanAmount;
-            interestRate = interestRate /12 /100;     
-            interest = Balance * interestRate;
-            principle = payment - (Balance * interestRate);
-            o_stream << endl << setw(8) << "Payment" << setw(12)<< "Amount" << setw(16) << "Interest" << setw(16)<< "Principal" << setw(15) 
-                     << "Balance" <<endl;
-            o_stream << name << setw(35) << loanAmount << endl;
+
+        i_stream >> loanAmount >> interestRate >> totalMonths >> ws;
+        double payment = monthly_payment(loanAmount,interestRate,totalMonths); //asigns the calculated monthly payment to the variable payment
+        Balance = loanAmount;
+        interestRate = interestRate /12 /100; //turns the interest rate into decimal form
+        interest = Balance * interestRate;
+        principle = payment - interest;
+        o_stream << endl << setw(8) << "Payment" << setw(12)<< "Amount" << setw(16) << "Interest" << setw(16)<< "Principal" << setw(15) 
+                 << "Balance" <<endl;
+        o_stream << name << setw(30) << "$"<< loanAmount << endl; // sets the headings
             for(int n = 1; n <= totalMonths; n++){
                 o_stream.setf(ios:: showpoint | ios:: fixed);
                 o_stream << setprecision(2);
@@ -60,12 +59,11 @@ int main(){
                 Balance -= principle;
                 principle = payment -(Balance * interestRate);
                 interest = Balance * interestRate;
-            }
+                if(payment > Balance){ //makes sure your payment isnt larger than your balance on the last payment
+                    payment = Balance;
+                }
         }
-        i_stream >> ws;
-
     }
-
 
     i_stream.close();
     o_stream.close();
@@ -73,6 +71,7 @@ int main(){
     return 0;
 }
 
+//function that calculates the monthly payment
 double monthly_payment(double loanAmount, double interestRate, int totalMonths){
 
     interestRate = interestRate / 12/100; // turns the interest rate into a decimal
